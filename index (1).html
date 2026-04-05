@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alma Beauty — Tienda Online</title>
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-59LCRHFZ');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- GA4 direct (backup) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-07GQ44DPGN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-07GQ44DPGN');
+  </script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Georgia', serif; background: #faf7f5; color: #2a2a2a; }
+
+    /* NAV */
+    nav {
+      background: #1a1a2e;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .logo { color: #e8b4b8; font-size: 1.6rem; letter-spacing: 2px; font-style: italic; }
+    .nav-links a {
+      color: #ccc; text-decoration: none; margin-left: 1.5rem;
+      font-family: 'Arial', sans-serif; font-size: 0.85rem; letter-spacing: 1px;
+    }
+    .nav-links a:hover { color: #e8b4b8; }
+    .cart-icon {
+      color: #e8b4b8; cursor: pointer; font-size: 0.85rem;
+      font-family: Arial, sans-serif; letter-spacing: 1px;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #6d2e46 100%);
+      padding: 5rem 2rem;
+      text-align: center;
+      color: white;
+    }
+    .hero-tag {
+      font-family: Arial, sans-serif; font-size: 0.75rem;
+      letter-spacing: 4px; color: #e8b4b8; margin-bottom: 1rem;
+    }
+    .hero h1 { font-size: 3rem; font-weight: normal; margin-bottom: 1rem; }
+    .hero p { font-size: 1.1rem; color: #ccc; margin-bottom: 2rem; font-family: Arial, sans-serif; }
+    .hero-btn {
+      background: #e8b4b8; color: #1a1a2e; border: none;
+      padding: 0.9rem 2.5rem; font-size: 0.9rem; letter-spacing: 2px;
+      cursor: pointer; font-family: Arial, sans-serif; font-weight: bold;
+      transition: background 0.2s;
+    }
+    .hero-btn:hover { background: #d4a0a4; }
+
+    /* BANNER PROMO */
+    .promo-banner {
+      background: #6d2e46; color: #faf7f5;
+      text-align: center; padding: 0.7rem;
+      font-family: Arial, sans-serif; font-size: 0.82rem; letter-spacing: 1px;
+    }
+
+    /* PRODUCTOS */
+    .section-title {
+      text-align: center; padding: 3rem 1rem 0.5rem;
+      font-size: 1.8rem; font-weight: normal; color: #2a2a2a;
+    }
+    .section-sub {
+      text-align: center; font-family: Arial, sans-serif;
+      font-size: 0.82rem; color: #888; letter-spacing: 2px; margin-bottom: 2rem;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem 3rem;
+    }
+
+    .product-card {
+      background: white;
+      border: 0.5px solid #e8e0ea;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    .product-img {
+      width: 100%; height: 220px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+    .product-info { padding: 1rem 1.2rem 1.2rem; }
+    .product-tag {
+      font-family: Arial, sans-serif; font-size: 0.7rem;
+      letter-spacing: 2px; color: #a26769; margin-bottom: 0.4rem;
+    }
+    .product-name { font-size: 1rem; margin-bottom: 0.3rem; }
+    .product-desc {
+      font-family: Arial, sans-serif; font-size: 0.8rem;
+      color: #888; margin-bottom: 0.8rem; line-height: 1.5;
+    }
+    .product-price {
+      font-family: Arial, sans-serif; font-size: 1.1rem;
+      font-weight: bold; color: #6d2e46; margin-bottom: 0.8rem;
+    }
+    .btn-add {
+      width: 100%; padding: 0.7rem;
+      background: #1a1a2e; color: white; border: none;
+      font-family: Arial, sans-serif; font-size: 0.8rem;
+      letter-spacing: 2px; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-add:hover { background: #6d2e46; }
+
+    /* CART SIDEBAR */
+    .cart-overlay {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 200;
+    }
+    .cart-sidebar {
+      position: fixed; top: 0; right: -400px; width: 380px;
+      height: 100%; background: white; z-index: 300;
+      transition: right 0.3s; padding: 2rem;
+      display: flex; flex-direction: column;
+    }
+    .cart-sidebar.open { right: 0; }
+    .cart-overlay.open { display: block; }
+    .cart-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.5rem; padding-bottom: 1rem;
+      border-bottom: 0.5px solid #e8e0ea;
+    }
+    .cart-header h3 { font-size: 1.2rem; font-weight: normal; }
+    .close-cart { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
+    .cart-items { flex: 1; overflow-y: auto; }
+    .cart-item {
+      display: flex; gap: 1rem; align-items: center;
+      padding: 0.8rem 0; border-bottom: 0.5px solid #f0eaed;
+    }
+    .cart-item-icon { font-size: 2rem; }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-size: 0.9rem; margin-bottom: 0.2rem; }
+    .cart-item-price { font-family: Arial, sans-serif; font-size: 0.85rem; color: #6d2e46; font-weight: bold; }
+    .cart-remove { background: none; border: none; color: #ccc; cursor: pointer; font-size: 1rem; }
+    .cart-remove:hover { color: #6d2e46; }
+    .cart-footer { padding-top: 1rem; border-top: 0.5px solid #e8e0ea; }
+    .cart-total {
+      display: flex; justify-content: space-between;
+      font-family: Arial, sans-serif; font-size: 1rem;
+      font-weight: bold; margin-bottom: 1rem;
+    }
+    .btn-checkout {
+      width: 100%; padding: 1rem;
+      background: #6d2e46; color: white; border: none;
+      font-family: Arial, sans-serif; font-size: 0.85rem;
+      letter-spacing: 2px; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-checkout:hover { background: #1a1a2e; }
+    .cart-empty {
+      text-align: center; color: #aaa;
+      font-family: Arial, sans-serif; font-size: 0.9rem;
+      margin-top: 3rem;
+    }
+
+    /* CHECKOUT MODAL */
+    .modal-overlay {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 400;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: white; width: 480px; max-width: 95vw;
+      padding: 2rem; max-height: 90vh; overflow-y: auto;
+    }
+    .modal h3 { font-size: 1.3rem; font-weight: normal; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block; font-family: Arial, sans-serif;
+      font-size: 0.75rem; letter-spacing: 1px; color: #888; margin-bottom: 0.4rem;
+    }
+    .form-group input {
+      width: 100%; padding: 0.7rem; border: 0.5px solid #ddd;
+      font-family: Arial, sans-serif; font-size: 0.9rem; outline: none;
+    }
+    .form-group input:focus { border-color: #6d2e46; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .btn-pay {
+      width: 100%; padding: 1rem; margin-top: 1rem;
+      background: #6d2e46; color: white; border: none;
+      font-family: Arial, sans-serif; font-size: 0.85rem;
+      letter-spacing: 2px; cursor: pointer;
+    }
+    .btn-pay:hover { background: #1a1a2e; }
+    .order-summary {
+      background: #faf7f5; padding: 1rem; margin-bottom: 1.5rem;
+    }
+    .order-summary-title {
+      font-family: Arial, sans-serif; font-size: 0.75rem;
+      letter-spacing: 2px; color: #888; margin-bottom: 0.8rem;
+    }
+    .order-line {
+      display: flex; justify-content: space-between;
+      font-family: Arial, sans-serif; font-size: 0.85rem;
+      padding: 0.3rem 0;
+    }
+    .order-total {
+      display: flex; justify-content: space-between;
+      font-family: Arial, sans-serif; font-size: 1rem;
+      font-weight: bold; padding-top: 0.8rem;
+      border-top: 0.5px solid #ddd; margin-top: 0.5rem;
+    }
+
+    /* SUCCESS */
+    .success-overlay {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 500;
+      align-items: center; justify-content: center;
+    }
+    .success-overlay.open { display: flex; }
+    .success-box {
+      background: white; padding: 3rem; text-align: center; max-width: 400px;
+    }
+    .success-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .success-box h3 { font-size: 1.4rem; font-weight: normal; margin-bottom: 0.5rem; }
+    .success-box p { font-family: Arial, sans-serif; font-size: 0.9rem; color: #888; margin-bottom: 1.5rem; }
+    .btn-continue {
+      background: #1a1a2e; color: white; border: none;
+      padding: 0.8rem 2rem; font-family: Arial, sans-serif;
+      font-size: 0.8rem; letter-spacing: 2px; cursor: pointer;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%);
+      background: #1a1a2e; color: white; padding: 0.8rem 1.5rem;
+      font-family: Arial, sans-serif; font-size: 0.85rem;
+      opacity: 0; transition: opacity 0.3s; z-index: 600; pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    /* FOOTER */
+    footer {
+      background: #1a1a2e; color: #888;
+      text-align: center; padding: 2rem;
+      font-family: Arial, sans-serif; font-size: 0.8rem;
+    }
+    footer span { color: #e8b4b8; }
+  </style>
+</head>
+<body>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-59LCRHFZ"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Alma Beauty</div>
+  <div class="nav-links">
+    <a href="#" onclick="trackSearch()">Skincare</a>
+    <a href="#">Facial</a>
+    <a href="#">Sets</a>
+    <a href="#">Ofertas</a>
+  </div>
+  <div class="cart-icon" onclick="openCart()">🛍 Carrito (<span id="cart-count">0</span>)</div>
+</nav>
+
+<!-- PROMO BANNER -->
+<div class="promo-banner" id="promo-banner" onclick="trackPromo()">
+  ✨ ENVÍO GRATIS en compras mayores a S/ 150 — Usa el código ALMA20 para 20% OFF ✨
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">NUEVA COLECCIÓN</div>
+  <h1>Tu ritual de belleza,<br>elevado.</h1>
+  <p>Descubre nuestra línea premium de skincare para una piel radiante.</p>
+  <button class="hero-btn" onclick="scrollToProducts()">VER PRODUCTOS</button>
+</div>
+
+<!-- PRODUCTOS -->
+<h2 class="section-title">Nuestros Favoritos</h2>
+<p class="section-sub">BEST SELLERS · TEMPORADA 2025</p>
+
+<div class="products-grid" id="products">
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cart-sidebar">
+  <div class="cart-header">
+    <h3>Tu carrito</h3>
+    <button class="close-cart" onclick="closeCart()">×</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <div class="cart-empty">Tu carrito está vacío</div>
+  </div>
+  <div class="cart-footer" id="cart-footer" style="display:none">
+    <div class="cart-total">
+      <span>Total</span>
+      <span id="cart-total-price">S/ 0</span>
+    </div>
+    <button class="btn-checkout" onclick="openCheckout()">PROCEDER AL PAGO</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="modal">
+    <h3>Finalizar compra</h3>
+    <div class="order-summary">
+      <div class="order-summary-title">RESUMEN DEL PEDIDO</div>
+      <div id="checkout-items"></div>
+      <div class="order-total">
+        <span>Total</span>
+        <span id="checkout-total">S/ 0</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>NOMBRE COMPLETO</label>
+      <input type="text" placeholder="Ana García" id="input-name" />
+    </div>
+    <div class="form-group">
+      <label>CORREO ELECTRÓNICO</label>
+      <input type="email" placeholder="ana@email.com" id="input-email" />
+    </div>
+    <div class="form-group">
+      <label>DIRECCIÓN DE ENVÍO</label>
+      <input type="text" placeholder="Av. Larco 123, Miraflores" id="input-address" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>NÚMERO DE TARJETA</label>
+        <input type="text" placeholder="4242 4242 4242 4242" maxlength="19" id="input-card" />
+      </div>
+      <div class="form-group">
+        <label>CVV</label>
+        <input type="text" placeholder="123" maxlength="3" id="input-cvv" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>VENCIMIENTO</label>
+        <input type="text" placeholder="MM/AA" maxlength="5" id="input-exp" />
+      </div>
+    </div>
+    <button class="btn-pay" onclick="completePurchase()">CONFIRMAR PAGO</button>
+    <button onclick="closeCheckout()" style="width:100%;margin-top:0.5rem;padding:0.7rem;background:none;border:0.5px solid #ddd;cursor:pointer;font-family:Arial,sans-serif;font-size:0.8rem;letter-spacing:1px;">CANCELAR</button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="success-overlay">
+  <div class="success-box">
+    <div class="success-icon">✨</div>
+    <h3>¡Compra completada!</h3>
+    <p>Gracias por tu pedido. Recibirás un correo de confirmación pronto.</p>
+    <button class="btn-continue" onclick="closeSucess()">SEGUIR COMPRANDO</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FOOTER -->
+<footer>
+  <p style="margin-bottom:0.5rem;font-size:1rem;color:#e8b4b8;font-style:italic;">Alma Beauty</p>
+  <p>© 2025 Alma Beauty Perú · <span>Skincare Premium</span></p>
+</footer>
+
+<script>
+  // PRODUCTOS
+  const products = [
+    { id: "P001", name: "Sérum Vitamina C", category: "Facial", desc: "Ilumina y unifica el tono de piel en 4 semanas.", price: 89, emoji: "🧴", bg: "#fff0f3" },
+    { id: "P002", name: "Set Hidratación Facial", category: "Set", desc: "Crema de día + contorno de ojos + esencia hidratante.", price: 149, emoji: "🎁", bg: "#f0f4ff" },
+    { id: "P003", name: "Protector Solar SPF50", category: "Skincare", desc: "Textura ultraligera. No deja residuo blanco.", price: 65, emoji: "☀️", bg: "#fffbf0" },
+    { id: "P004", name: "Mascarilla de Colágeno", category: "Facial", desc: "Activa la regeneración celular mientras duermes.", price: 75, emoji: "💆", bg: "#f5f0ff" },
+    { id: "P005", name: "Contorno de Ojos", category: "Facial", desc: "Reduce ojeras y líneas de expresión en 2 semanas.", price: 98, emoji: "👁️", bg: "#f0fff5" },
+    { id: "P006", name: "Tónico Ácido Glicólico", category: "Skincare", desc: "Exfolia suavemente y refina la textura de la piel.", price: 72, emoji: "✨", bg: "#fff5f0" },
+  ];
+
+  // Render products
+  const grid = document.getElementById('products');
+  products.forEach(p => {
+    grid.innerHTML += `
+      <div class="product-card" onclick="trackViewItem('${p.id}', '${p.name}', ${p.price})">
+        <div class="product-img" style="background:${p.bg}">${p.emoji}</div>
+        <div class="product-info">
+          <div class="product-tag">${p.category.toUpperCase()}</div>
+          <div class="product-name">${p.name}</div>
+          <div class="product-desc">${p.desc}</div>
+          <div class="product-price">S/ ${p.price}.00</div>
+          <button class="btn-add" onclick="event.stopPropagation(); addToCart('${p.id}')">
+            AGREGAR AL CARRITO
+          </button>
+        </div>
+      </div>`;
+  });
+
+  // CART STATE
+  let cart = [];
+
+  // TRACKING FUNCTIONS
+  function trackViewItem(id, name, price) {
+    gtag('event', 'view_item', {
+      currency: 'PEN',
+      value: price,
+      items: [{ item_id: id, item_name: name, price: price, quantity: 1 }]
+    });
+    console.log('🔍 view_item:', name);
+  }
+
+  function trackAddToCart(product) {
+    gtag('event', 'add_to_cart', {
+      currency: 'PEN',
+      value: product.price,
+      items: [{ item_id: product.id, item_name: product.name, item_category: product.category, price: product.price, quantity: 1 }]
+    });
+    console.log('🛒 add_to_cart:', product.name);
+  }
+
+  function trackBeginCheckout() {
+    const total = cart.reduce((s, i) => s + i.price, 0);
+    gtag('event', 'begin_checkout', {
+      currency: 'PEN',
+      value: total,
+      items: cart.map(i => ({ item_id: i.id, item_name: i.name, price: i.price, quantity: 1 }))
+    });
+    console.log('💳 begin_checkout — Total: S/', total);
+  }
+
+  function trackPurchase() {
+    const total = cart.reduce((s, i) => s + i.price, 0);
+    const transactionId = 'AB-' + Date.now();
+    gtag('event', 'purchase', {
+      transaction_id: transactionId,
+      currency: 'PEN',
+      value: total,
+      items: cart.map(i => ({ item_id: i.id, item_name: i.name, price: i.price, quantity: 1 }))
+    });
+    console.log('✅ purchase — ID:', transactionId, '— Total: S/', total);
+  }
+
+  function trackPromo() {
+    gtag('event', 'view_promotion', {
+      promotion_name: 'ALMA20 — 20% OFF',
+      creative_name: 'Banner envío gratis'
+    });
+    console.log('📢 view_promotion');
+  }
+
+  function trackSearch() {
+    gtag('event', 'search', { search_term: 'skincare' });
+    console.log('🔎 search: skincare');
+  }
+
+  // CART FUNCTIONS
+  function addToCart(id) {
+    const product = products.find(p => p.id === id);
+    cart.push(product);
+    trackAddToCart(product);
+    updateCartUI();
+    showToast(`${product.emoji} ${product.name} agregado al carrito`);
+    openCart();
+  }
+
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartUI();
+  }
+
+  function updateCartUI() {
+    document.getElementById('cart-count').textContent = cart.length;
+    const itemsEl = document.getElementById('cart-items');
+    const footerEl = document.getElementById('cart-footer');
+    const total = cart.reduce((s, i) => s + i.price, 0);
+
+    if (cart.length === 0) {
+      itemsEl.innerHTML = '<div class="cart-empty">Tu carrito está vacío</div>';
+      footerEl.style.display = 'none';
+      return;
+    }
+
+    footerEl.style.display = 'block';
+    document.getElementById('cart-total-price').textContent = `S/ ${total}`;
+    itemsEl.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <div class="cart-item-icon">${item.emoji}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">S/ ${item.price}.00</div>
+        </div>
+        <button class="cart-remove" onclick="removeFromCart(${i})">✕</button>
+      </div>`).join('');
+  }
+
+  function openCart() {
+    document.getElementById('cart-sidebar').classList.add('open');
+    document.getElementById('cart-overlay').classList.add('open');
+  }
+
+  function closeCart() {
+    document.getElementById('cart-sidebar').classList.remove('open');
+    document.getElementById('cart-overlay').classList.remove('open');
+  }
+
+  function openCheckout() {
+    if (cart.length === 0) return;
+    trackBeginCheckout();
+    closeCart();
+    const total = cart.reduce((s, i) => s + i.price, 0);
+    document.getElementById('checkout-items').innerHTML =
+      cart.map(i => `<div class="order-line"><span>${i.emoji} ${i.name}</span><span>S/ ${i.price}</span></div>`).join('');
+    document.getElementById('checkout-total').textContent = `S/ ${total}`;
+    document.getElementById('checkout-modal').classList.add('open');
+  }
+
+  function closeCheckout() {
+    document.getElementById('checkout-modal').classList.remove('open');
+  }
+
+  function completePurchase() {
+    trackPurchase();
+    closeCheckout();
+    cart = [];
+    updateCartUI();
+    document.getElementById('success-overlay').classList.add('open');
+  }
+
+  function closeSucess() {
+    document.getElementById('success-overlay').classList.remove('open');
+  }
+
+  function scrollToProducts() {
+    document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // Track promo on load
+  window.addEventListener('load', () => {
+    setTimeout(trackPromo, 1500);
+  });
+</script>
+</body>
+</html>
