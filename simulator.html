@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Alma Beauty — Simulador de datos</title>
+
+  <!-- GA4 directo -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-07GQ44DPGN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-07GQ44DPGN', { send_page_view: false });
+  </script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #0f0f1a; color: #fff; padding: 2rem; }
+    h1 { color: #e8b4b8; font-size: 1.4rem; margin-bottom: 0.3rem; }
+    p { color: #888; font-size: 0.85rem; margin-bottom: 2rem; }
+
+    .controls { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .btn {
+      padding: 0.8rem 1.5rem; border: none; cursor: pointer;
+      font-size: 0.85rem; letter-spacing: 1px; font-weight: bold;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-start { background: #6d2e46; color: white; }
+    .btn-stop { background: #333; color: #aaa; }
+    .btn-clear { background: #1a1a2e; color: #e8b4b8; border: 1px solid #6d2e46; }
+
+    .stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem; margin-bottom: 2rem;
+    }
+    .stat {
+      background: #1a1a2e; padding: 1rem; border-left: 3px solid #6d2e46;
+    }
+    .stat-label { font-size: 0.7rem; color: #888; letter-spacing: 1px; margin-bottom: 0.4rem; }
+    .stat-value { font-size: 1.6rem; color: #e8b4b8; font-weight: bold; }
+
+    .progress-bar {
+      background: #1a1a2e; height: 6px; border-radius: 3px; margin-bottom: 2rem;
+    }
+    .progress-fill {
+      height: 100%; background: #6d2e46; border-radius: 3px;
+      width: 0%; transition: width 0.3s;
+    }
+
+    .log {
+      background: #0a0a14; padding: 1rem; height: 300px;
+      overflow-y: auto; font-size: 0.78rem; line-height: 1.8;
+      border: 1px solid #1a1a2e;
+    }
+    .log-event { color: #7fc8a9; }
+    .log-purchase { color: #e8b4b8; font-weight: bold; }
+    .log-info { color: #666; }
+    .log-done { color: #e8b4b8; font-size: 0.9rem; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+<h1>✨ Alma Beauty — Simulador GA4</h1>
+<p>Genera eventos reales de ecommerce en tu propiedad GA4. Deja correr y captura el dashboard.</p>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-label">SESIONES</div>
+    <div class="stat-value" id="s-sessions">0</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">ADD TO CART</div>
+    <div class="stat-value" id="s-atc">0</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">CHECKOUTS</div>
+    <div class="stat-value" id="s-checkout">0</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">COMPRAS</div>
+    <div class="stat-value" id="s-purchases">0</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">REVENUE (S/)</div>
+    <div class="stat-value" id="s-revenue">0</div>
+  </div>
+</div>
+
+<div class="progress-bar">
+  <div class="progress-fill" id="progress"></div>
+</div>
+
+<div class="controls">
+  <button class="btn btn-start" onclick="startSim()">▶ INICIAR SIMULACIÓN</button>
+  <button class="btn btn-stop" onclick="stopSim()">■ DETENER</button>
+  <button class="btn btn-clear" onclick="clearLog()">↺ LIMPIAR LOG</button>
+</div>
+
+<div class="log" id="log">
+  <span class="log-info">— Listo para simular. Presiona INICIAR. —</span>
+</div>
+
+<script>
+  const products = [
+    { id: "P001", name: "Sérum Vitamina C",      category: "Facial",   price: 89  },
+    { id: "P002", name: "Set Hidratación Facial", category: "Set",      price: 149 },
+    { id: "P003", name: "Protector Solar SPF50",  category: "Skincare", price: 65  },
+    { id: "P004", name: "Mascarilla de Colágeno", category: "Facial",   price: 75  },
+    { id: "P005", name: "Contorno de Ojos",       category: "Facial",   price: 98  },
+    { id: "P006", name: "Tónico Ácido Glicólico", category: "Skincare", price: 72  },
+  ];
+
+  const sources = ["google / cpc", "facebook / paid", "instagram / paid", "google / organic", "direct / none", "email / newsletter"];
+
+  let running = false;
+  let timers = [];
+  let stats = { sessions: 0, atc: 0, checkout: 0, purchases: 0, revenue: 0 };
+  let simStep = 0;
+  const TOTAL_SESSIONS = 40;
+
+  function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+  function randFloat(a, b) { return Math.round((Math.random() * (b - a) + a) * 100) / 100; }
+  function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  function log(msg, type = 'event') {
+    const el = document.getElementById('log');
+    const time = new Date().toLocaleTimeString('es-PE');
+    el.innerHTML += `<br><span class="log-${type}">[${time}] ${msg}</span>`;
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function updateStats() {
+    document.getElementById('s-sessions').textContent = stats.sessions;
+    document.getElementById('s-atc').textContent = stats.atc;
+    document.getElementById('s-checkout').textContent = stats.checkout;
+    document.getElementById('s-purchases').textContent = stats.purchases;
+    document.getElementById('s-revenue').textContent = stats.revenue;
+    const pct = Math.round((simStep / TOTAL_SESSIONS) * 100);
+    document.getElementById('progress').style.width = pct + '%';
+  }
+
+  async function simulateSession(sessionNum) {
+    if (!running) return;
+    const source = rand(sources);
+    const numProducts = randInt(1, 3);
+    const selectedProducts = [];
+    for (let i = 0; i < numProducts; i++) selectedProducts.push(rand(products));
+    const willBuy = Math.random() < 0.45; // 45% conversion rate
+    const willCheckout = willBuy || Math.random() < 0.65;
+
+    stats.sessions++;
+    updateStats();
+    log(`👤 Sesión #${sessionNum} — fuente: ${source}`);
+
+    // page_view
+    gtag('event', 'page_view', { page_title: 'Alma Beauty', page_location: 'https://almabeauty.github.io' });
+    await wait(randInt(300, 800));
+    if (!running) return;
+
+    // view_promotion (70% chance)
+    if (Math.random() < 0.7) {
+      gtag('event', 'view_promotion', { promotion_name: 'Banner ALMA20', creative_name: 'Hero Banner' });
+      log(`  📢 view_promotion`);
+      await wait(randInt(200, 500));
+      if (!running) return;
+    }
+
+    // view_item para cada producto
+    for (const p of selectedProducts) {
+      gtag('event', 'view_item', {
+        currency: 'PEN', value: p.price,
+        items: [{ item_id: p.id, item_name: p.name, item_category: p.category, price: p.price, quantity: 1 }]
+      });
+      log(`  🔍 view_item: ${p.name} (S/ ${p.price})`);
+      await wait(randInt(400, 900));
+      if (!running) return;
+    }
+
+    // add_to_cart
+    for (const p of selectedProducts) {
+      stats.atc++;
+      gtag('event', 'add_to_cart', {
+        currency: 'PEN', value: p.price,
+        items: [{ item_id: p.id, item_name: p.name, item_category: p.category, price: p.price, quantity: 1 }]
+      });
+      log(`  🛒 add_to_cart: ${p.name}`);
+      await wait(randInt(300, 600));
+      if (!running) return;
+    }
+
+    if (!willCheckout) {
+      log(`  ↩️ Abandono de carrito`, 'info');
+      return;
+    }
+
+    // begin_checkout
+    const cartTotal = selectedProducts.reduce((s, p) => s + p.price, 0);
+    stats.checkout++;
+    gtag('event', 'begin_checkout', {
+      currency: 'PEN', value: cartTotal,
+      items: selectedProducts.map(p => ({ item_id: p.id, item_name: p.name, price: p.price, quantity: 1 }))
+    });
+    log(`  💳 begin_checkout — S/ ${cartTotal}`);
+    await wait(randInt(500, 1200));
+    if (!running) return;
+
+    if (!willBuy) {
+      log(`  ↩️ Abandono en checkout`, 'info');
+      return;
+    }
+
+    // purchase
+    const transactionId = 'AB-' + Date.now() + '-' + sessionNum;
+    stats.purchases++;
+    stats.revenue += cartTotal;
+    gtag('event', 'purchase', {
+      transaction_id: transactionId,
+      currency: 'PEN', value: cartTotal,
+      items: selectedProducts.map(p => ({ item_id: p.id, item_name: p.name, item_category: p.category, price: p.price, quantity: 1 }))
+    });
+    log(`  ✅ PURCHASE — ID: ${transactionId} — S/ ${cartTotal}`, 'purchase');
+    updateStats();
+  }
+
+  async function startSim() {
+    if (running) return;
+    running = true;
+    simStep = 0;
+    log('🚀 Iniciando simulación de 40 sesiones...', 'done');
+
+    for (let i = 1; i <= TOTAL_SESSIONS; i++) {
+      if (!running) break;
+      simStep = i;
+      await simulateSession(i);
+      await wait(randInt(800, 1800));
+      updateStats();
+    }
+
+    if (running) {
+      running = false;
+      log(`\n🎉 Simulación completa — ${stats.purchases} compras — Revenue total: S/ ${stats.revenue}`, 'done');
+    }
+  }
+
+  function stopSim() {
+    running = false;
+    log('■ Simulación detenida.', 'info');
+  }
+
+  function clearLog() {
+    document.getElementById('log').innerHTML = '<span class="log-info">— Log limpiado. —</span>';
+  }
+</script>
+</body>
+</html>
